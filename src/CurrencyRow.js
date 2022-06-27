@@ -18,6 +18,7 @@ export default function CurrencyRow(props) {
     optionName
   } = props
   var i = -1
+  
 
   return(
     <div >

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import CurrencyRow from './CurrencyRow'
 import ReplaceButton from './ReplaceButton';
+import RequesrHistory from './RequestHistory';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -12,13 +13,14 @@ const STATISTICS = 'popularConversion.json'
 
 function App() {
   const [currencyOptions, setCurrencyOptions] = useState([])
-  const [nameCurrencyOptions, setNameCurrencyOptions] = useState([], [])
+  const [nameCurrencyOptions, setNameCurrencyOptions] = useState([])
   const [date, setDate] = useState()
   const [fromCurrency, setFromCurrency] = useState()
   const [toCurrency, setToCurrency] = useState()
   const [exchangeRate, setExchangeRate] = useState()
   const [amount, setAmount] = useState(1)
   const [amountInFromCurrency, setAmountInFromCurrency] = useState(true)
+  const [arrLog, setArrLof] = useState([])
   var littleFromAmount = 0
   var littleToAmount = 0
 
@@ -39,33 +41,35 @@ function App() {
   }
 
   useEffect(() => {
+    if (currencyOptions[0] == null) {
     fetch(BASE_URL)
       .then(res => res.json())
       .then(data => {
-        const firstCurrency = Object.keys(data.rates)[0]
-        setCurrencyOptions([data.base, ...Object.keys(data.rates)])
-        setFromCurrency(data.base)
-        setToCurrency(firstCurrency)
-        setExchangeRate(data.rates[firstCurrency])
-        setDate(data.date)
+          const firstCurrency = Object.keys(data.rates)[0]
+          setCurrencyOptions([data.base, ...Object.keys(data.rates)])
+          setFromCurrency(data.base)
+          setToCurrency(firstCurrency)
+          setExchangeRate(data.rates[firstCurrency])
+          setDate(data.date)
+        
       })
-  }, [])
-  useEffect(() => {
-    if (nameCurrencyOptions.length === 0) {
+    }
+    if (nameCurrencyOptions[0] == null){
       fetch(NAMES_URL)
         .then((res) => res.json())
         .then((data) => {
+          var arr = new Array()
           currencyOptions.forEach(function (entry) {
             if (entry === 'RUB') {
-              nameCurrencyOptions.push('Российский рубль')
+              arr.push('Российский рубль')
             } else {
-              nameCurrencyOptions.push(data.Valute[entry].Name)
+              arr.push(data.Valute[entry].Name)
             }
           });
+          setNameCurrencyOptions(arr)
         });
     }
-  }, [])
-
+  })
   useEffect(() => {
     if (fromCurrency != null && toCurrency != null) {
       fetch(BASE_URL)
@@ -100,7 +104,6 @@ function App() {
               data[fromCurrency][toCurrency] = buf
             }
           }
-          console.log(data)
         });
     }
   }, [fromCurrency, toCurrency])
@@ -118,7 +121,7 @@ function App() {
     setAmountInFromCurrency(false)
   }
   useEffect(() => {
-    if (fromCurrency != null && toCurrency != null && toAmount  != null && fromAmount!= null){
+    if (fromCurrency != null && toCurrency != null && toAmount != null && fromAmount != null) {
       var date = new Date()
       let cell = {
         fromCurrency: fromCurrency,
@@ -127,10 +130,9 @@ function App() {
         fromAmount: fromAmount,
         date: date.getTime()
       };
-      console.log(cell)
-
+      arrLog.push(cell)
     }
-  }, [fromCurrency, toCurrency, toAmount, fromAmount])
+  }, [toAmount])
   return (
     <div>
       <h1>Конвертер</h1>
@@ -180,11 +182,12 @@ function App() {
         </CardContent>
 
       </Card>
-
       <Card sx={{ minWidth: 275 }} className='myBlock' >
         <CardContent>
-          <p>Вы искали</p>
-
+          <p>История поиска</p>
+          <RequesrHistory
+           historyList={arrLog}
+          />
         </CardContent>
 
       </Card>

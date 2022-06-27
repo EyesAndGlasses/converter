@@ -30,3 +30,8 @@ h5, p{
 .myButton{
   margin: auto;
 }
+.items{
+  text-align: left;
+  color: black;
+  
+}

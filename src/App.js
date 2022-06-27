@@ -184,7 +184,7 @@ function App() {
       </Card>
       <Card sx={{ minWidth: 275 }} className='myBlock' >
         <CardContent>
-          <p>История поиска</p>
+          <p>История переводов</p>
           <RequesrHistory
            historyList={arrLog}
           />
